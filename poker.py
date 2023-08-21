@@ -29,6 +29,8 @@ class Card:
         if isinstance(other, Card):
             return self.rank == other.rank and self.suit == other.suit
         return False
+    def __hash__(self):
+        return hash((self.rank, self.suit))
 
 class Deck:
     def __init__(self):
@@ -86,8 +88,8 @@ def evaluate_hand(hand):
     VALUES = "23456789TJQKA"
     SUITS = "♥♠♣♦"
     
-    values = [card[0] if card[0] != '10' else 'T' for card in hand]
-    suits = [card[1] for card in hand]
+    values = [card.rank if card.rank != '10' else 'T' for card in hand]
+    suits = [card.suit for card in hand]
     
     value_counts = Counter(values)
     suit_counts = Counter(suits)
@@ -129,10 +131,10 @@ def getbesthand(handlist):
     strongest_rank = None
     strongest_values = None
     strongest_hands = []
-    converted_handlist = [ [(card.rank, card.suit) for card in hand] for hand in handlist]
+    #converted_handlist = [ [(card.rank, card.suit) for card in hand] for hand in handlist]
 
         
-    for hand in converted_handlist:
+    for hand in handlist:
         rank, values = evaluate_hand(hand)
 
         if strongest_rank is None or rank > strongest_rank or (rank == strongest_rank and values > strongest_values):
@@ -142,11 +144,11 @@ def getbesthand(handlist):
         elif rank == strongest_rank and values == strongest_values:
             strongest_hands.append(hand)
     
-    best_hand_cards_list = []
-    for hand in strongest_hands:
-        best_hand_cards = [Card(rank, suit) for rank, suit in hand]
-        best_hand_cards_list.append(tuple(best_hand_cards))
-    return best_hand_cards_list
+    #best_hand_cards_list = []
+    #for hand in strongest_hands:
+    #    best_hand_cards = [Card(rank, suit) for rank, suit in hand]
+    #    best_hand_cards_list.append(tuple(best_hand_cards))
+    return strongest_hands
 
 # Function 2: combine all players' besthand into a list of tuples
 def combineallplayersbesthands(players):
@@ -183,34 +185,34 @@ def main():
 
             print(f"\nYour hole cards: {player.hole_cards[0].rank}{player.hole_cards[0].suit}, {player.hole_cards[1].rank}{player.hole_cards[1].suit}")
 
-            #continue_play = input("\nDo you want to continue? (y/n): ")
-            #if continue_play.lower() != 'y':
-            #    break
+            continue_play = input("\nDo you want to continue? (y/n): ")
+            if continue_play.lower() != 'y':
+                break
 
             flop_cards = deal_flop(deck)
             print(f"Flop cards: {', '.join([card.rank + card.suit for card in flop_cards])}")
 
-            #continue_play = input("\nDo you want to continue? (y/n): ")
-            #if continue_play.lower() != 'y':
-            #    break
+            continue_play = input("\nDo you want to continue? (y/n): ")
+            if continue_play.lower() != 'y':
+                break
 
             turn_card = deal_turn(deck)
             flop_and_turn = flop_cards + [turn_card]
             print(f"Turn card: {turn_card.rank + turn_card.suit}")
             print(f"Community cards: {', '.join([card.rank + card.suit for card in flop_and_turn])}")
 
-            #continue_play = input("\nDo you want to continue? (y/n): ")
-            #if continue_play.lower() != 'y':
-            #    break
+            continue_play = input("\nDo you want to continue? (y/n): ")
+            if continue_play.lower() != 'y':
+                break
 
             river_card = deal_river(deck)
             community_cards = flop_and_turn + [river_card]
             print(f"River card: {river_card.rank + river_card.suit}")
             print(f"Community cards: {', '.join([card.rank + card.suit for card in community_cards])}")
 
-            #continue_play = input("\nDo you want to continue? (y/n): ")
-            #if continue_play.lower() != 'y':
-            #    break
+            continue_play = input("\nDo you want to continue? (y/n): ")
+            if continue_play.lower() != 'y':
+                break
 
             display_hands(player, bots, community_cards)
             
